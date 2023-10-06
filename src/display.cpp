@@ -1,6 +1,6 @@
 #include "../include/display.h"
 
-void Display_t::start(std::function<void(void)> cycle)
+void Display_t::start()
 {
 
     // Init SDL Window
@@ -20,33 +20,6 @@ void Display_t::start(std::function<void(void)> cycle)
     }
 
     SDL_SetWindowTitle(window, "Chip 8 Emulator");
-
-    SDL_Event e;
-    bool quit = false;
-    while (!quit)
-    {
-        cycle();
-        while (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT)
-            {
-                quit = true;
-            }
-            if (e.type == SDL_KEYDOWN)
-            {
-                quit = true;
-            }
-            if (e.type == SDL_MOUSEBUTTONDOWN)
-            {
-                quit = true;
-            }
-        }
-
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-    }
-
-    SDL_Delay(10000);
 }
 
 Display_t::Display_t()
@@ -102,4 +75,20 @@ void Display_t::update()
 bool Display_t::check(uint8_t x_, uint8_t y_)
 {
     return display[x_][y_];
+}
+
+void Display_t::destroy()
+{
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+bool Display_t::poll()
+{
+    SDL_PollEvent(&e);
+    if (e.type == SDL_QUIT)
+    {
+        return 0;
+    }
+    return 1;
 }

@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "display.h"
 #include <pthread.h>
+#include <SDL2/SDL.h>
 
 #include <unistd.h> // for linux
 

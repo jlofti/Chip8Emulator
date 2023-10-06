@@ -142,7 +142,15 @@ void CPU_t::on()
     pthread_t displayThread;
     memory->loadFont();
     memory->loadROM("../rom/ibm.ch8");
-    display->start([&]
-                   { return this->cycle(); });
-    // pthread_create(&displayThread, NULL, display->start, NULL);
+    display->start();
+    bool run = true;
+
+    while (run)
+    {
+        this->cycle();
+        display->update();
+        run = display->poll();
+    }
+
+    display->destroy();
 }
