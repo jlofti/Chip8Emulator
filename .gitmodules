@@ -1,0 +1,9 @@
+[submodule "include/SDL"]
+	path = include/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "include/-b"]
+	path = include/-b
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "include/SDL2"]
+	path = include/SDL2
+	url = https://github.com/libsdl-org/SDL.git
