@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include <iostream>
 
+#define ROM_START 0x200
+#define MEM_SIZE 4096
+
 static uint8_t font[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -24,7 +27,7 @@ static uint8_t font[80] = {
 class Memory_t
 {
 private:
-    uint8_t memory[4096];
+    uint8_t memory[MEM_SIZE];
 
 public:
     Memory_t();

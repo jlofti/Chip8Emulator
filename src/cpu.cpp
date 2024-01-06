@@ -11,7 +11,7 @@ void CPU_t::cycle()
     uint8_t msb = memory->read(pc);
     uint8_t lsb = memory->read(pc + 1);
     uint16_t instr = (msb << 8) | lsb;
-    pc += 0x02;
+    pc += PC_INC;
     // Decode
     uint8_t opcode = (instr & OP_CODE_MASK) >> OP_SHIFT;
     uint8_t vx = (instr & VX_MASK) >> VX_SHIFT;
@@ -136,6 +136,90 @@ void CPU_t::DRW(uint8_t vx_, uint8_t vy_, uint8_t n_)
     }
     display->update();
 };
+
+void CPU_t::SYS(uint16_t nnn_)
+{
+    // Unused, does nothing
+}
+
+void CPU_t::RET()
+{
+    uint16_t addr = stck.top();
+    pc = addr;
+    stck.pop();
+}
+
+void CPU_t::CALL(uint16_t addr_)
+{
+    stck.push(pc);
+    pc = addr_;
+}
+
+void CPU_t::SE(uint8_t vx_, uint16_t val_)
+{
+    if (v[vx_] == val_)
+    {
+        pc += PC_INC;
+    }
+}
+
+void CPU_t::SNE(uint8_t vx_, uint16_t val_)
+{
+    if (v[vx_] != val_)
+    {
+        pc += PC_INC;
+    }
+}
+
+void CPU_t::SE(uint8_t vx_, uint8_t vy_)
+{
+    if (v[vx_] == v[vy_])
+    {
+        pc += PC_INC;
+    }
+}
+
+void CPU_t::LD(uint8_t vx_, uint8_t vy_)
+{
+    v[vx_] = v[vy_];
+}
+
+void CPU_t::OR(uint8_t vx_, uint8_t vy_)
+{
+    v[vx_] |= v[vy_];
+}
+
+void CPU_t::AND(uint8_t vx_, uint8_t vy_)
+{
+    v[vx_] &= v[vy_];
+}
+
+void CPU_t::XOR(uint8_t vx_, uint8_t vy_)
+{
+    v[vx_] ^= v[vy_];
+}
+
+void CPU_t::ADD(uint8_t vx_, uint8_t vy_)
+{
+    uint16_t res = v[vx_] + v[vy_];
+    v[VF] = (res & (1 << ADD_CARRY_BIT)) >> ADD_CARRY_BIT;
+    v[vx_] = res & ARITH_8_BIT_RES;
+}
+
+void CPU_t::SUB(uint8_t vx_, uint8_t vy_)
+{
+
+    int res = v[vx_] - v[vy_];
+    if (res < 0)
+    {
+        v[VF] = 0;
+    }
+    else
+    {
+        v[VF] = 1;
+        v[vx_] = res & ARITH_8_BIT_RES;
+    }
+}
 
 void CPU_t::on()
 {

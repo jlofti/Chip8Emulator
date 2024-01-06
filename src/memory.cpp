@@ -29,12 +29,12 @@ void Memory_t::loadROM(char *path_)
     while (byte != EOF)
     {
         byte = fgetc(rom);
-        memory[0x200 + j] = byte;
+        memory[ROM_START + j] = byte;
         j++;
     }
     fclose(rom);
 
-    for (int i = 0x200; i < 0x200 + j - 1; i++)
+    for (int i = ROM_START; i < ROM_START + j - 1; i++)
     {
         printf("Mem %d, 0x%x\n", i, memory[i]);
     }

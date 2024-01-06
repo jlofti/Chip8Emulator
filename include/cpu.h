@@ -16,10 +16,16 @@ using namespace std;
 #define N_MASK 0x000F
 #define NN_MASK 0x00FF
 #define NNN_MASK 0x0FFF
+#define ADD_CARRY_BIT 9
+#define ARITH_8_BIT_RES 0xFFFF
 
 #define OP_SHIFT 12
 #define VX_SHIFT 8
 #define VY_SHIFT 4
+
+#define PC_INC 0x02
+
+#define VF 15
 
 class CPU_t
 {
@@ -28,7 +34,7 @@ private:
     // Regs
     uint8_t v[16];
     uint16_t I = 0;
-    stack<uint16_t> stack;
+    stack<uint16_t> stck;
     uint8_t dt;
     uint8_t st;
     uint16_t pc = 0x200;
@@ -39,27 +45,27 @@ public:
     CPU_t(Memory_t *mem_, Display_t *disp_);
     ~CPU_t();
 
-    // void SYS(uint16_t nnn_);
+    void SYS(uint16_t nnn_);
     void CLS();
-    // void RET();
+    void RET();
     void JMP(uint16_t nnn_);
-    /* void CALL(uint16_t addr_);
-     void SE(uint8_t vx_, uint16_t val_);
-     void SNE(uint8_t vx_, uint16_t instr_);
-     void SE(uint8_t vx_, uint8_t vy);*/
+    void CALL(uint16_t addr_);
+    void SE(uint8_t vx_, uint16_t val_);
+    void SNE(uint8_t vx_, uint16_t val_);
+    void SE(uint8_t vx_, uint8_t vy);
     void LD(uint8_t vx_, uint16_t nn_);
     void ADDNN(uint8_t vx_, uint8_t nn_);
-    /*void LD(uint8_t vx_, uint8_t vy_);
+    void LD(uint8_t vx_, uint8_t vy_);
     void OR(uint8_t vx_, uint8_t vy_);
-    void AND(uint8_t vx_, uint8_t vy);
-    void XOR(uint8_t vx_, uint8_t vy);
+    void AND(uint8_t vx_, uint8_t vy_);
+    void XOR(uint8_t vx_, uint8_t vy_);
     void ADD(uint8_t vx_, uint8_t vy_);
     void SUB(uint8_t vx_, uint8_t vy_);
-    void SHR(uint8_t vx_);
-    void SUBN(uint8_t vx_, uint8_t vy_);
-    void SHL(uint8_t vx_);
-    void SNE(uint8_t vx_, uint8_t vy_);*/
-    void LD(uint16_t nnn_);
+    // void SHR(uint8_t vx_);
+    // void SUBN(uint8_t vx_, uint8_t vy_);
+    // void SHL(uint8_t vx_);
+    // void SNE(uint8_t vx_, uint8_t vy_);
+    // void LD(uint16_t nnn_);
     // void JP(uint16_t addr_);
     // void RND(uint8_t vx_, uint8_t data_);
     void DRW(uint8_t vx_, uint8_t vy_, uint8_t n_);

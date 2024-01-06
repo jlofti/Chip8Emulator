@@ -2,7 +2,6 @@
 #include "include/memory.h"
 #include "include/cpu.h"
 #include "include/display.h"
-#include <pthread.h>
 
 int main(int, char **)
 {
