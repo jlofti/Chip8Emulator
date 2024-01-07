@@ -1,9 +1,10 @@
 #include "../include/cpu.h"
 
-CPU_t::CPU_t(Memory_t *mem_, Display_t *disp_)
+CPU_t::CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window_)
 {
     memory = mem_;
     display = disp_;
+    window = window_;
 }
 void CPU_t::cycle()
 {
@@ -22,38 +23,101 @@ void CPU_t::cycle()
     uint16_t nnn = instr & NNN_MASK;
 
     printf("Instruction: %04X", instr);
-    // printf("OPCODE: 0x%01X VX: 0x%01X, VY: 0x%01X, N: 0x%01X, NN: 0x%02X, NNN: 0x%03X\n", opcode, vx, vy, n, nn, nnn);
+    printf("OPCODE: 0x%01X VX: 0x%01X, VY: 0x%01X, N: 0x%01X, NN: 0x%02X, NNN: 0x%03X\n", opcode, vx, vy, n, nn, nnn);
 
     // Exec
     switch (opcode)
     {
     case 0:
-        printf("Clear sceen\n");
-        CLS();
+
+        switch (n)
+        {
+        case 0x00:
+            printf("Clear sceen\n");
+            CLS();
+            break;
+        case 0x0E:
+            printf("Ret\n");
+            RET();
+            break;
+        }
+
         break;
     case 1:
         printf("Jump\n");
         JMP(nnn);
         break;
     case 2:
+        printf("Call\n");
+        CALL(nnn);
         break;
     case 3:
+        printf("Skip Next Instr\n");
+        SE(vx, static_cast<uint16_t>(nn));
         break;
     case 4:
+        printf("!Skip Next Instr\n");
+        SNE(vx, static_cast<uint16_t>(nn));
         break;
     case 5:
+        printf("Skip Next Instr\n");
+        SE(vx, vy);
         break;
     case 6:
         printf("LD\n");
-        LD(vx, nn);
+        LD(vx, static_cast<uint16_t>(nn));
         break;
     case 7:
         printf("ADDNN\n");
         ADDNN(vx, nn);
         break;
     case 8:
+        switch (n)
+        {
+        case 0:
+            printf("LD");
+            LD(vx, vy);
+            break;
+        case 1:
+            printf("OR\n");
+            OR(vx, vy);
+            break;
+        case 2:
+            printf("AND\n");
+            AND(vx, vy);
+            break;
+        case 3:
+            printf("XOR\n");
+            XOR(vx, vy);
+            break;
+        case 4:
+            printf("ADD\n");
+            ADD(vx, vy);
+            break;
+        case 5:
+            printf("SUB\n");
+            SUB(vx, vy);
+            break;
+        case 6:
+            printf("SHR\n");
+            SHR(vx, vy);
+            break;
+        case 7:
+            printf("SUBN\n");
+            SUBN(vx, vy);
+            break;
+        case 0x0E:
+            printf("SHL\n");
+            SHL(vx, vy);
+            break;
+
+        default:
+            break;
+        }
         break;
     case 9:
+        printf("!Skip Next Instr\n");
+        SNE(vx, vy);
         break;
     case 0x0a:
         printf("LDNNN\n");
@@ -70,18 +134,55 @@ void CPU_t::cycle()
     case 0x0e:
         break;
     case 0x0f:
+        switch (nn)
+        {
+        case 0x07:
+            printf("Ld DT\n");
+            LDDT(vx);
+            break;
+        case 0x0A:
+            printf("LD k\n");
+            LDK(vx);
+            break;
+        case 0x15:
+            printf("LDDT\n");
+            LDDT(vx);
+            break;
+        case 0x18:
+            printf("LDST\n");
+            LDST(vx);
+            break;
+        case 0x1E:
+            printf("ADD\n");
+            ADD(vx);
+            break;
+        case 0x29:
+            printf("LDF\n");
+            LDF(vx);
+            break;
+        case 0x33:
+            printf("LDB\n");
+            LDB(vx);
+            break;
+        case 0x55:
+            printf("STI\n");
+            STI(vx);
+            break;
+        case 0x65:
+            printf("LDI\n");
+            LDI(vx);
+            break;
+        }
         break;
 
     default:
         break;
     }
-
-    sleep(1);
 }
 
 void CPU_t::CLS()
 {
-    display->clear();
+    window->clear();
 }
 
 void CPU_t::JMP(uint16_t nnn_)
@@ -94,6 +195,11 @@ void CPU_t::LD(uint8_t vx_, uint16_t nn_)
     v[vx_] = nn_;
 }
 
+void CPU_t::STDT(uint8_t vx_)
+{
+    dt = v[vx_];
+}
+
 void CPU_t::ADDNN(uint8_t vx_, uint8_t nn_)
 {
     v[vx_] += nn_;
@@ -102,6 +208,10 @@ void CPU_t::ADDNN(uint8_t vx_, uint8_t nn_)
 void CPU_t::LD(uint16_t nnn_)
 {
     I = nnn_;
+}
+
+void CPU_t::LDK(uint8_t vx_)
+{
 }
 
 void CPU_t::DRW(uint8_t vx_, uint8_t vy_, uint8_t n_)
@@ -187,54 +297,180 @@ void CPU_t::LD(uint8_t vx_, uint8_t vy_)
 void CPU_t::OR(uint8_t vx_, uint8_t vy_)
 {
     v[vx_] |= v[vy_];
+    // AND,OR,XOR reset VF
+    v[VF] = 0;
 }
 
 void CPU_t::AND(uint8_t vx_, uint8_t vy_)
 {
     v[vx_] &= v[vy_];
+
+    // AND,OR,XOR reset VF
+    v[VF] = 0;
 }
 
 void CPU_t::XOR(uint8_t vx_, uint8_t vy_)
 {
     v[vx_] ^= v[vy_];
+    // AND,OR,XOR reset VF
+    v[VF] = 0;
 }
 
 void CPU_t::ADD(uint8_t vx_, uint8_t vy_)
 {
     uint16_t res = v[vx_] + v[vy_];
-    v[VF] = (res & (1 << ADD_CARRY_BIT)) >> ADD_CARRY_BIT;
     v[vx_] = res & ARITH_8_BIT_RES;
+    v[VF] = (res & (1 << ADD_CARRY_BIT)) >> ADD_CARRY_BIT;
 }
 
 void CPU_t::SUB(uint8_t vx_, uint8_t vy_)
 {
+    uint16_t res16 = v[vx_] - v[vy_];
+    uint8_t res8 = v[vx_] - v[vy_];
+    v[vx_] = res16 & ARITH_8_BIT_RES;
+    v[VF] = res8 == res16;
+}
 
-    int res = v[vx_] - v[vy_];
-    if (res < 0)
+void CPU_t::SHR(uint8_t vx_, uint8_t vy_)
+{
+
+    v[vx_] = v[vy_] >> 1;
+    v[VF] = v[vy_] & 1;
+}
+
+void CPU_t::SUBN(uint8_t vx_, uint8_t vy_)
+{
+    uint16_t res16 = v[vy_] - v[vx_];
+    uint8_t res8 = v[vy_] - v[vx_];
+    v[vx_] = res16 & ARITH_8_BIT_RES;
+    v[VF] = res8 == res16;
+}
+
+void CPU_t::SHL(uint8_t vx_, uint8_t vy_)
+{
+    v[vx_] = v[vy_] << 1;
+    v[VF] = (v[vy_] & (1 << 7)) >> 7;
+}
+
+void CPU_t::SNE(uint8_t vx_, uint8_t vy_)
+{
+    if (v[vx_] != v[vy_])
     {
-        v[VF] = 0;
+        pc += PC_INC;
     }
-    else
+}
+
+void CPU_t::JP(uint16_t addr_)
+{
+    pc = addr_ + v[0];
+}
+
+void CPU_t::RND(uint8_t vx_, uint8_t nn_)
+{
+    v[vx_] = nn_ & (rand() % 256);
+}
+
+// Keyboard
+void CPU_t::SKP(uint8_t vx_)
+{
+}
+
+// Keyboard
+void CPU_t::SKNP(uint8_t vx_)
+{
+}
+
+// Delay Timer
+void CPU_t::LDDT(uint8_t vx_)
+{
+    dt = v[vx_];
+}
+
+void CPU_t::LDST(uint8_t vx_)
+{
+    st = v[vx_];
+}
+
+void CPU_t::ADD(uint8_t vx_)
+{
+    I += v[vx_];
+}
+
+void CPU_t::LDB(uint8_t vx_)
+{
+    uint8_t temp = v[vx_];
+
+    for (uint8_t i = 0; i < 3; i++)
     {
-        v[VF] = 1;
-        v[vx_] = res & ARITH_8_BIT_RES;
+        memory->write(I + 2 - i, temp % 10);
+        temp /= 10;
     }
+}
+
+void CPU_t::STI(uint8_t vx_)
+{
+    for (uint8_t i = 0; i <= vx_; i++)
+    {
+        memory->write(I + i, v[i]);
+    }
+}
+
+void CPU_t::LDI(uint8_t vx_)
+{
+    for (uint8_t i = 0; i <= vx_; i++)
+    {
+        v[i] = memory->read(I + i);
+    }
+}
+
+// Load font
+void CPU_t::LDF(uint8_t vx_)
+{
 }
 
 void CPU_t::on()
 {
-    pthread_t displayThread;
     memory->loadFont();
-    memory->loadROM("../rom/ibm.ch8");
-    display->start();
+    memory->loadROM("../rom/4-flags.ch8");
+    window->start();
     bool run = true;
+
+    high_resolution_clock::time_point cpuT1, cpuT2, sdT1, sdT2;
+
+    cpuT1 = high_resolution_clock::now();
+    sdT1 = high_resolution_clock::now();
+    duration<double, milli> cpuDT;
+    duration<double, milli> sdDT;
 
     while (run)
     {
-        this->cycle();
-        display->update();
-        run = display->poll();
+        cpuT2 = high_resolution_clock::now();
+        sdT2 = high_resolution_clock::now();
+        cpuDT = cpuT2 - cpuT1;
+        sdDT = sdT2 - sdT1;
+
+        if (cpuDT.count() >= (1000 * (1 / FPS)))
+        {
+            cycle();
+            cpuT1 = cpuT2;
+        }
+
+        if (sdDT.count() >= (1000 * (1 / DELAY_AND_SOUND_HZ)))
+        {
+            if (dt != 0)
+            {
+                dt--;
+            }
+            if (st != 0)
+            {
+                st--;
+            }
+
+            sdT1 = sdT2;
+        }
+
+        run = window->poll();
     }
 
-    display->destroy();
+    window->destroy();
 }
