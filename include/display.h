@@ -26,4 +26,5 @@ public:
     void clearPixel(uint8_t x_, uint8_t y_);
     bool check(uint8_t x_, uint8_t y_);
     void update();
+    void clear();
 };

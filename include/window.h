@@ -16,7 +16,7 @@ class Window_t
 private:
     inline static SDL_Window *window;
     inline static SDL_Renderer *renderer;
-    SDL_Event e;
+    // SDL_Event e;
 
 public:
     Window_t();
@@ -28,5 +28,5 @@ public:
     void start();
     void clear();
     void destroy();
-    bool poll();
+    bool poll(SDL_Event &e);
 };

@@ -24,7 +24,7 @@ void Memory_t::loadFont()
     }
 }
 
-void Memory_t::loadROM(char *path_)
+void Memory_t::loadROM(const char *path_)
 {
     FILE *rom = fopen(path_, "rb");
     int j = 0;

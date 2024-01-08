@@ -36,5 +36,5 @@ public:
     uint8_t read(uint16_t addr_);
     void write(uint16_t addr_, uint8_t data_);
     void loadFont();
-    void loadROM(char *path_);
+    void loadROM(const char *path_);
 };

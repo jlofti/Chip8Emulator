@@ -4,7 +4,14 @@
 #include "memory.h"
 #include "display.h"
 #include "window.h"
-#include <SDL2/SDL.h>
+#include "keyboard.h"
+
+#ifdef _WIN32
+#include <SDL/SDL.h> /* Windows-specific SDL2 library */
+#else
+#include <SDL2/SDL.h> /* macOS- and GNU/Linux-specific */
+#endif
+
 #include <chrono>
 
 #include <unistd.h> // for linux
@@ -30,7 +37,7 @@ using namespace std::chrono;
 #define REG_SIZE 16
 #define VF 15
 
-#define FPS 800
+#define FPS 5
 #define DELAY_AND_SOUND_HZ 60
 
 class CPU_t
@@ -47,9 +54,10 @@ private:
     Memory_t *memory;
     Display_t *display;
     Window_t *window;
+    Keyboard_t *keyboard;
 
 public:
-    CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window);
+    CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window, Keyboard_t *keyboard_);
     ~CPU_t();
 
     void SYS(uint16_t nnn_);

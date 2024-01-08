@@ -33,7 +33,7 @@ void Window_t::clear()
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    update();
 }
 
 void Window_t::destroy()
@@ -42,13 +42,14 @@ void Window_t::destroy()
     SDL_Quit();
 }
 
-bool Window_t::poll()
+bool Window_t::poll(SDL_Event &e)
 {
     SDL_PollEvent(&e);
     if (e.type == SDL_QUIT)
     {
         return 0;
     }
+
     return 1;
 }
 

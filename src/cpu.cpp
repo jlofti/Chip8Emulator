@@ -1,10 +1,11 @@
 #include "../include/cpu.h"
 
-CPU_t::CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window_)
+CPU_t::CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window_, Keyboard_t *keyboard_)
 {
     memory = mem_;
     display = disp_;
     window = window_;
+    keyboard = keyboard_;
 }
 void CPU_t::cycle()
 {
@@ -22,8 +23,8 @@ void CPU_t::cycle()
     uint8_t nn = instr & NN_MASK;
     uint16_t nnn = instr & NNN_MASK;
 
-    printf("Instruction: %04X", instr);
-    printf("OPCODE: 0x%01X VX: 0x%01X, VY: 0x%01X, N: 0x%01X, NN: 0x%02X, NNN: 0x%03X\n", opcode, vx, vy, n, nn, nnn);
+    printf("Instruction: %04X\n", instr);
+    //  printf("OPCODE: 0x%01X VX: 0x%01X, VY: 0x%01X, N: 0x%01X, NN: 0x%02X, NNN: 0x%03X\n", opcode, vx, vy, n, nn, nnn);
 
     // Exec
     switch (opcode)
@@ -33,81 +34,81 @@ void CPU_t::cycle()
         switch (n)
         {
         case 0x00:
-            printf("Clear sceen\n");
+            // printf("Clear sceen\n");
             CLS();
             break;
         case 0x0E:
-            printf("Ret\n");
+            // printf("Ret\n");
             RET();
             break;
         }
 
         break;
     case 1:
-        printf("Jump\n");
+        // printf("Jump\n");
         JMP(nnn);
         break;
     case 2:
-        printf("Call\n");
+        // printf("Call\n");
         CALL(nnn);
         break;
     case 3:
-        printf("Skip Next Instr\n");
+        // printf("Skip Next Instr\n");
         SE(vx, static_cast<uint16_t>(nn));
         break;
     case 4:
-        printf("!Skip Next Instr\n");
+        // printf("!Skip Next Instr\n");
         SNE(vx, static_cast<uint16_t>(nn));
         break;
     case 5:
-        printf("Skip Next Instr\n");
+        // printf("Skip Next Instr\n");
         SE(vx, vy);
         break;
     case 6:
-        printf("LD\n");
+        // printf("LD\n");
         LD(vx, static_cast<uint16_t>(nn));
         break;
     case 7:
-        printf("ADDNN\n");
+        // printf("ADDNN\n");
         ADDNN(vx, nn);
         break;
     case 8:
         switch (n)
         {
         case 0:
-            printf("LD");
+            // printf("LD");
             LD(vx, vy);
             break;
         case 1:
-            printf("OR\n");
+            // printf("OR\n");
             OR(vx, vy);
             break;
         case 2:
-            printf("AND\n");
+            // printf("AND\n");
             AND(vx, vy);
             break;
         case 3:
-            printf("XOR\n");
+            // printf("XOR\n");
             XOR(vx, vy);
             break;
         case 4:
-            printf("ADD\n");
+            // printf("ADD\n");
             ADD(vx, vy);
             break;
         case 5:
-            printf("SUB\n");
+            // printf("SUB\n");
             SUB(vx, vy);
             break;
         case 6:
-            printf("SHR\n");
+            // printf("SHR\n");
             SHR(vx, vy);
             break;
         case 7:
-            printf("SUBN\n");
+            // printf("SUBN\n");
             SUBN(vx, vy);
             break;
         case 0x0E:
-            printf("SHL\n");
+            // printf("SHL\n");
             SHL(vx, vy);
             break;
 
@@ -116,60 +117,73 @@ void CPU_t::cycle()
         }
         break;
     case 9:
-        printf("!Skip Next Instr\n");
+        //  printf("!Skip Next Instr\n");
         SNE(vx, vy);
         break;
     case 0x0a:
-        printf("LDNNN\n");
+        // printf("LDNNN\n");
         LD(nnn);
         break;
     case 0x0b:
+        JP(nnn);
         break;
     case 0x0c:
+        RND(vx, nn);
         break;
     case 0x0d:
-        printf("DRW\n");
+        // printf("DRW\n");
         DRW(vx, vy, n);
         break;
     case 0x0e:
+        switch (nn)
+        {
+        case (0x9E):
+            //  printf("Skip Key\n");
+            SKP(vx);
+            break;
+        case (0xA1):
+            // printf("!Skip Key\n");
+            SKNP(vx);
+            break;
+        }
         break;
     case 0x0f:
         switch (nn)
         {
         case 0x07:
-            printf("Ld DT\n");
+            // printf("Ld DT\n");
             LDDT(vx);
             break;
         case 0x0A:
-            printf("LD k\n");
+            // printf("LD k\n");
             LDK(vx);
             break;
         case 0x15:
-            printf("LDDT\n");
+            // printf("LDDT\n");
             LDDT(vx);
             break;
         case 0x18:
-            printf("LDST\n");
+            // printf("LDST\n");
             LDST(vx);
             break;
         case 0x1E:
-            printf("ADD\n");
+            // printf("ADD\n");
             ADD(vx);
             break;
         case 0x29:
-            printf("LDF\n");
+            //  printf("LDF\n");
             LDF(vx);
             break;
         case 0x33:
-            printf("LDB\n");
+            // printf("LDB\n");
             LDB(vx);
             break;
         case 0x55:
-            printf("STI\n");
+            // printf("STI\n");
             STI(vx);
             break;
         case 0x65:
-            printf("LDI\n");
+            // printf("LDI\n");
             LDI(vx);
             break;
         }
@@ -182,7 +196,7 @@ void CPU_t::cycle()
 
 void CPU_t::CLS()
 {
-    window->clear();
+    display->clear();
 }
 
 void CPU_t::JMP(uint16_t nnn_)
@@ -212,6 +226,17 @@ void CPU_t::LD(uint16_t nnn_)
 
 void CPU_t::LDK(uint8_t vx_)
 {
+    for (uint8_t i = 0; i < 16; i++)
+    {
+        if (keyboard->getKey(i))
+        {
+            v[vx_] = i;
+            return;
+        }
+    }
+
+    // Redo if no key pressed, keep going until one is
+    pc -= PC_INC;
 }
 
 void CPU_t::DRW(uint8_t vx_, uint8_t vy_, uint8_t n_)
@@ -373,11 +398,19 @@ void CPU_t::RND(uint8_t vx_, uint8_t nn_)
 // Keyboard
 void CPU_t::SKP(uint8_t vx_)
 {
+    if (keyboard->getKey(v[vx_]))
+    {
+        pc += PC_INC;
+    }
 }
 
 // Keyboard
 void CPU_t::SKNP(uint8_t vx_)
 {
+    if (!keyboard->getKey(v[vx_]))
+    {
+        pc += PC_INC;
+    }
 }
 
 // Delay Timer
@@ -431,9 +464,10 @@ void CPU_t::LDF(uint8_t vx_)
 void CPU_t::on()
 {
     memory->loadFont();
-    memory->loadROM("../rom/4-flags.ch8");
+    memory->loadROM("../rom/5-quirks.ch8");
     window->start();
     bool run = true;
+    SDL_Event e;
 
     high_resolution_clock::time_point cpuT1, cpuT2, sdT1, sdT2;
 
@@ -444,18 +478,21 @@ void CPU_t::on()
 
     while (run)
     {
+        // Time differences
         cpuT2 = high_resolution_clock::now();
         sdT2 = high_resolution_clock::now();
         cpuDT = cpuT2 - cpuT1;
         sdDT = sdT2 - sdT1;
 
-        if (cpuDT.count() >= (1000 * (1 / FPS)))
+        // Cpu cycle
+        if (cpuDT.count() >= ((1000 * static_cast<double>(1 / FPS))))
         {
             cycle();
             cpuT1 = cpuT2;
         }
 
-        if (sdDT.count() >= (1000 * (1 / DELAY_AND_SOUND_HZ)))
+        // Delay and Sound Register are fixed to 60hz
+        if (sdDT.count() >= (1000 * static_cast<double>(1 / DELAY_AND_SOUND_HZ)))
         {
             if (dt != 0)
             {
@@ -469,7 +506,19 @@ void CPU_t::on()
             sdT1 = sdT2;
         }
 
-        run = window->poll();
+        // Check if still running
+        run = window->poll(e);
+
+        // Check keyboard
+        switch (e.type)
+        {
+        case SDL_KEYDOWN:
+            keyboard->keyDown(keyboard->scanCodeToKey(e.key.keysym.scancode));
+            break;
+        case SDL_KEYUP:
+            keyboard->keyUp(keyboard->scanCodeToKey(e.key.keysym.scancode));
+            break;
+        }
     }
 
     window->destroy();

@@ -41,3 +41,15 @@ bool Display_t::check(uint8_t x_, uint8_t y_)
 {
     return display[x_][y_];
 }
+
+void Display_t::clear()
+{
+    for (int i = 0; i < WIDTH; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            display[i][j] = false;
+        }
+    }
+    window->clear();
+}
