@@ -24,9 +24,15 @@ void Memory_t::loadFont()
     }
 }
 
-void Memory_t::loadROM(const char *path_)
+bool Memory_t::loadROM(const char *path_)
 {
     FILE *rom = fopen(path_, "rb");
+
+    if (!rom)
+    {
+        printf("Rom not found\n");
+        return false;
+    }
     int j = 0;
 
     // Read each byte
@@ -43,4 +49,5 @@ void Memory_t::loadROM(const char *path_)
     {
         printf("Mem %d, 0x%x\n", i, read(i));
     }
+    return true;
 }

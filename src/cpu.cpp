@@ -426,10 +426,21 @@ void CPU_t::LDF(const uint8_t &vx_)
     I = 5 * v[vx_];
 }
 
-void CPU_t::on()
+void CPU_t::on(char *rom_, int fps_)
 {
     memory->loadFont();
-    memory->loadROM("../rom/Pong (alt).ch8");
+    char romPrefix[255];
+    strcpy(romPrefix, "../rom/");
+    strcat(romPrefix, rom_);
+    printf("Searching for Rom: %s\n", romPrefix);
+
+    if (!memory->loadROM(romPrefix))
+    {
+        return;
+    }
+    printf("Found %s !\n", romPrefix);
+
+    // memory->loadROM("../rom/Pong (alt).ch8");
     window->start();
     bool run = true;
     SDL_Event e;
@@ -451,7 +462,7 @@ void CPU_t::on()
         sdDT = sdT2 - sdT1;
 
         // Cpu cycle
-        if (cpuDT.count() >= (1000 * static_cast<double>(1.0 / FPS)))
+        if (cpuDT.count() >= (1000 * static_cast<double>(1.0 / fps_)))
         {
             cycle();
             cpuT1 = cpuT2;

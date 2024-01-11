@@ -37,7 +37,6 @@ using namespace std::chrono;
 #define REG_SIZE 16
 #define VF 15
 
-#define FPS 540
 #define DELAY_AND_SOUND_HZ 60
 
 class CPU_t
@@ -97,5 +96,5 @@ public:
     void LDI(const uint8_t &vx_);
 
     void cycle();
-    void on();
+    void on(char *rom_, int fps_);
 };
