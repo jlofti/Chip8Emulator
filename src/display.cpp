@@ -5,12 +5,12 @@ Display_t::Display_t(Window_t *window_)
     window = window_;
 }
 
-void Display_t::clearPixel(uint8_t x_, uint8_t y_)
+void Display_t::clearPixel(const uint8_t &x_, const uint8_t &y_)
 {
     display[x_][y_] = 0;
 }
 
-void Display_t::drawPixel(uint8_t x_, uint8_t y_)
+void Display_t::drawPixel(const uint8_t &x_, const uint8_t &y_)
 {
     display[x_][y_] = 1;
 }
@@ -37,7 +37,7 @@ void Display_t::update()
     window->update();
 }
 
-bool Display_t::check(uint8_t x_, uint8_t y_)
+bool Display_t::check(const uint8_t &x_, const uint8_t &y_)
 {
     return display[x_][y_];
 }

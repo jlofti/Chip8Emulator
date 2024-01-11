@@ -37,7 +37,7 @@ using namespace std::chrono;
 #define REG_SIZE 16
 #define VF 15
 
-#define FPS 5
+#define FPS 540
 #define DELAY_AND_SOUND_HZ 60
 
 class CPU_t
@@ -57,44 +57,44 @@ private:
     Keyboard_t *keyboard;
 
 public:
-    CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window, Keyboard_t *keyboard_);
+    CPU_t(Memory_t *memory_, Display_t *display_, Window_t *window_, Keyboard_t *keyboard_);
     ~CPU_t();
 
-    void SYS(uint16_t nnn_);
+    void SYS(const uint16_t &nnn_);
     void CLS();
     void RET();
-    void JMP(uint16_t nnn_);
-    void CALL(uint16_t addr_);
-    void SE(uint8_t vx_, uint16_t val_);
-    void SNE(uint8_t vx_, uint16_t val_);
-    void SE(uint8_t vx_, uint8_t vy);
-    void LD(uint8_t vx_, uint16_t nn_);
-    void ADDNN(uint8_t vx_, uint8_t nn_);
-    void LD(uint8_t vx_, uint8_t vy_);
-    void OR(uint8_t vx_, uint8_t vy_);
-    void AND(uint8_t vx_, uint8_t vy_);
-    void XOR(uint8_t vx_, uint8_t vy_);
-    void ADD(uint8_t vx_, uint8_t vy_);
-    void SUB(uint8_t vx_, uint8_t vy_);
-    void SHR(uint8_t vx_, uint8_t vy_);
-    void SUBN(uint8_t vx_, uint8_t vy_);
-    void SHL(uint8_t vx_, uint8_t vy_);
-    void SNE(uint8_t vx_, uint8_t vy_);
-    void LD(uint16_t nnn_);
-    void JP(uint16_t addr_);
-    void RND(uint8_t vx_, uint8_t nn_);
-    void DRW(uint8_t vx_, uint8_t vy_, uint8_t n_);
-    void SKP(uint8_t vx_);
-    void SKNP(uint8_t vx_);
-    void LDDT(uint8_t vx_);
-    void LDK(uint8_t vx_);
-    void LDST(uint8_t vx_);
-    void STDT(uint8_t vx_);
-    void ADD(uint8_t vx_);
-    void LDF(uint8_t vx_);
-    void LDB(uint8_t vx_);
-    void STI(uint8_t vx_);
-    void LDI(uint8_t vx_);
+    void JMP(const uint16_t &addr_);
+    void CALL(const uint16_t &addr_);
+    void SE(const uint8_t &vx_, const uint16_t &nnn_);
+    void SNE(const uint8_t &vx_, uint16_t nn_);
+    void SE(const uint8_t &vx_, const uint8_t &vy_);
+    void LD(const uint8_t &vx_, uint16_t nn_);
+    void ADDNN(const uint8_t &vx_, uint8_t nn_);
+    void LD(const uint8_t &vx_, const uint8_t &vy_);
+    void OR(const uint8_t &vx_, const uint8_t &vy_);
+    void AND(const uint8_t &vx_, const uint8_t &vy_);
+    void XOR(const uint8_t &vx_, const uint8_t &vy_);
+    void ADD(const uint8_t &vx_, const uint8_t &vy_);
+    void SUB(const uint8_t &vx_, const uint8_t &vy_);
+    void SHR(const uint8_t &vx_, const uint8_t &vy_);
+    void SUBN(const uint8_t &vx_, const uint8_t &vy_);
+    void SHL(const uint8_t &vx_, const uint8_t &vy_);
+    void SNE(const uint8_t &vx_, const uint8_t &vy_);
+    void LD(const uint16_t &nnn_);
+    void JP(const uint16_t &addr_);
+    void RND(const uint8_t &vx_, const uint8_t &nn_);
+    void DRW(const uint8_t &vx_, const uint8_t &vy_, const uint8_t &n_);
+    void SKP(const uint8_t &vx_);
+    void SKNP(const uint8_t &vx_);
+    void LDDT(const uint8_t &vx_);
+    void LDK(const uint8_t &vx_);
+    void LDST(const uint8_t &vx_);
+    void STDT(const uint8_t &vx_);
+    void ADD(const uint8_t &vx_);
+    void LDF(const uint8_t &vx_);
+    void LDB(const uint8_t &vx_);
+    void STI(const uint8_t &vx_);
+    void LDI(const uint8_t &vx_);
 
     void cycle();
     void on();

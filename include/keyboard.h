@@ -38,4 +38,5 @@ public:
     bool getKey(const uint8_t &key_);
     void keyUp(const uint8_t &key__);
     void keyDown(const uint8_t &key_);
+    bool validKey(const SDL_Scancode &scancode_);
 };

@@ -33,8 +33,8 @@ private:
 public:
     Memory_t();
     ~Memory_t();
-    uint8_t read(uint16_t addr_);
-    void write(uint16_t addr_, uint8_t data_);
+    uint8_t read(const uint16_t &addr_);
+    void write(const uint16_t &addr_, const uint8_t &data_);
     void loadFont();
     void loadROM(const char *path_);
 };

@@ -4,12 +4,12 @@ Memory_t::Memory_t(){
 
 };
 
-uint8_t Memory_t::read(uint16_t addr_)
+uint8_t Memory_t::read(const uint16_t &addr_)
 {
     return memory[addr_];
 }
 
-void Memory_t::write(uint16_t addr_, uint8_t data_)
+void Memory_t::write(const uint16_t &addr_, const uint8_t &data_)
 {
     memory[addr_] = data_;
 }

@@ -22,8 +22,13 @@ file(GLOB all_SRCS
         "${PROJECT_SOURCE_DIR}/include/**/*.hpp"
         "${PROJECT_SOURCE_DIR}/src/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/*.c"
+        "${PROJECT_SOURCE_DIR}/include/SDL2/include.*.h}",
+        "${PROJECT_SOURCE_DIR}/include/SDL2/include.*.hpp}",
+        "${PROJECT_SOURCE_DIR}/include/SDL2/include.*.c}",
+        "${PROJECT_SOURCE_DIR}/include/SDL2/include.*.cpp}"
         )
 
+        
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 

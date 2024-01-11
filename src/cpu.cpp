@@ -1,9 +1,9 @@
 #include "../include/cpu.h"
 
-CPU_t::CPU_t(Memory_t *mem_, Display_t *disp_, Window_t *window_, Keyboard_t *keyboard_)
+CPU_t::CPU_t(Memory_t *memory_, Display_t *display_, Window_t *window_, Keyboard_t *keyboard_)
 {
-    memory = mem_;
-    display = disp_;
+    memory = memory_;
+    display = display_;
     window = window_;
     keyboard = keyboard_;
 }
@@ -24,91 +24,71 @@ void CPU_t::cycle()
     uint16_t nnn = instr & NNN_MASK;
 
     printf("Instruction: %04X\n", instr);
-    //  printf("OPCODE: 0x%01X VX: 0x%01X, VY: 0x%01X, N: 0x%01X, NN: 0x%02X, NNN: 0x%03X\n", opcode, vx, vy, n, nn, nnn);
 
     // Exec
     switch (opcode)
     {
     case 0:
-
         switch (n)
         {
         case 0x00:
-            // printf("Clear sceen\n");
             CLS();
             break;
         case 0x0E:
-            // printf("Ret\n");
             RET();
             break;
         }
 
         break;
     case 1:
-        // printf("Jump\n");
         JMP(nnn);
         break;
     case 2:
-        // printf("Call\n");
         CALL(nnn);
         break;
     case 3:
-        // printf("Skip Next Instr\n");
         SE(vx, static_cast<uint16_t>(nn));
         break;
     case 4:
-        // printf("!Skip Next Instr\n");
         SNE(vx, static_cast<uint16_t>(nn));
         break;
     case 5:
-        // printf("Skip Next Instr\n");
         SE(vx, vy);
         break;
     case 6:
-        // printf("LD\n");
         LD(vx, static_cast<uint16_t>(nn));
         break;
     case 7:
-        // printf("ADDNN\n");
         ADDNN(vx, nn);
         break;
     case 8:
         switch (n)
         {
         case 0:
-            // printf("LD");
             LD(vx, vy);
             break;
         case 1:
-            // printf("OR\n");
             OR(vx, vy);
             break;
         case 2:
-            // printf("AND\n");
             AND(vx, vy);
             break;
         case 3:
-            // printf("XOR\n");
             XOR(vx, vy);
             break;
         case 4:
-            // printf("ADD\n");
             ADD(vx, vy);
             break;
         case 5:
-            // printf("SUB\n");
             SUB(vx, vy);
             break;
         case 6:
-            // printf("SHR\n");
             SHR(vx, vy);
             break;
         case 7:
-            // printf("SUBN\n");
             SUBN(vx, vy);
             break;
         case 0x0E:
-            // printf("SHL\n");
             SHL(vx, vy);
             break;
 
@@ -117,11 +97,9 @@ void CPU_t::cycle()
         }
         break;
     case 9:
-        //  printf("!Skip Next Instr\n");
         SNE(vx, vy);
         break;
     case 0x0a:
-        // printf("LDNNN\n");
         LD(nnn);
         break;
     case 0x0b:
@@ -131,18 +109,15 @@ void CPU_t::cycle()
         RND(vx, nn);
         break;
     case 0x0d:
-        // printf("DRW\n");
         DRW(vx, vy, n);
         break;
     case 0x0e:
         switch (nn)
         {
         case (0x9E):
-            //  printf("Skip Key\n");
             SKP(vx);
             break;
         case (0xA1):
-            // printf("!Skip Key\n");
             SKNP(vx);
             break;
         }
@@ -151,39 +126,30 @@ void CPU_t::cycle()
         switch (nn)
         {
         case 0x07:
-            // printf("Ld DT\n");
-            LDDT(vx);
+            STDT(vx);
             break;
         case 0x0A:
-            // printf("LD k\n");
             LDK(vx);
             break;
         case 0x15:
-            // printf("LDDT\n");
             LDDT(vx);
             break;
         case 0x18:
-            // printf("LDST\n");
             LDST(vx);
             break;
         case 0x1E:
-            // printf("ADD\n");
             ADD(vx);
             break;
         case 0x29:
-            //  printf("LDF\n");
             LDF(vx);
             break;
         case 0x33:
-            // printf("LDB\n");
             LDB(vx);
             break;
         case 0x55:
-            // printf("STI\n");
             STI(vx);
             break;
         case 0x65:
-            // printf("LDI\n");
             LDI(vx);
             break;
         }
@@ -199,32 +165,27 @@ void CPU_t::CLS()
     display->clear();
 }
 
-void CPU_t::JMP(uint16_t nnn_)
+void CPU_t::JMP(const uint16_t &addr_)
 {
-    pc = nnn_;
+    pc = addr_;
 }
 
-void CPU_t::LD(uint8_t vx_, uint16_t nn_)
+void CPU_t::LD(const uint8_t &vx_, uint16_t nn_)
 {
     v[vx_] = nn_;
 }
 
-void CPU_t::STDT(uint8_t vx_)
-{
-    dt = v[vx_];
-}
-
-void CPU_t::ADDNN(uint8_t vx_, uint8_t nn_)
+void CPU_t::ADDNN(const uint8_t &vx_, uint8_t nn_)
 {
     v[vx_] += nn_;
 }
 
-void CPU_t::LD(uint16_t nnn_)
+void CPU_t::LD(const uint16_t &nnn_)
 {
     I = nnn_;
 }
 
-void CPU_t::LDK(uint8_t vx_)
+void CPU_t::LDK(const uint8_t &vx_)
 {
     for (uint8_t i = 0; i < 16; i++)
     {
@@ -239,7 +200,7 @@ void CPU_t::LDK(uint8_t vx_)
     pc -= PC_INC;
 }
 
-void CPU_t::DRW(uint8_t vx_, uint8_t vy_, uint8_t n_)
+void CPU_t::DRW(const uint8_t &vx_, const uint8_t &vy_, const uint8_t &n_)
 {
     uint8_t x = v[vx_] % WIDTH;
     uint8_t y = v[vy_] % HEIGHT;
@@ -272,7 +233,7 @@ void CPU_t::DRW(uint8_t vx_, uint8_t vy_, uint8_t n_)
     display->update();
 };
 
-void CPU_t::SYS(uint16_t nnn_)
+void CPU_t::SYS(const uint16_t &nnn_)
 {
     // Unused, does nothing
 }
@@ -284,29 +245,29 @@ void CPU_t::RET()
     stck.pop();
 }
 
-void CPU_t::CALL(uint16_t addr_)
+void CPU_t::CALL(const uint16_t &addr_)
 {
     stck.push(pc);
     pc = addr_;
 }
 
-void CPU_t::SE(uint8_t vx_, uint16_t val_)
+void CPU_t::SE(const uint8_t &vx_, const uint16_t &nn_)
 {
-    if (v[vx_] == val_)
+    if (v[vx_] == nn_)
     {
         pc += PC_INC;
     }
 }
 
-void CPU_t::SNE(uint8_t vx_, uint16_t val_)
+void CPU_t::SNE(const uint8_t &vx_, uint16_t nn_)
 {
-    if (v[vx_] != val_)
+    if (v[vx_] != nn_)
     {
         pc += PC_INC;
     }
 }
 
-void CPU_t::SE(uint8_t vx_, uint8_t vy_)
+void CPU_t::SE(const uint8_t &vx_, const uint8_t &vy_)
 {
     if (v[vx_] == v[vy_])
     {
@@ -314,19 +275,19 @@ void CPU_t::SE(uint8_t vx_, uint8_t vy_)
     }
 }
 
-void CPU_t::LD(uint8_t vx_, uint8_t vy_)
+void CPU_t::LD(const uint8_t &vx_, const uint8_t &vy_)
 {
     v[vx_] = v[vy_];
 }
 
-void CPU_t::OR(uint8_t vx_, uint8_t vy_)
+void CPU_t::OR(const uint8_t &vx_, const uint8_t &vy_)
 {
     v[vx_] |= v[vy_];
     // AND,OR,XOR reset VF
     v[VF] = 0;
 }
 
-void CPU_t::AND(uint8_t vx_, uint8_t vy_)
+void CPU_t::AND(const uint8_t &vx_, const uint8_t &vy_)
 {
     v[vx_] &= v[vy_];
 
@@ -334,21 +295,21 @@ void CPU_t::AND(uint8_t vx_, uint8_t vy_)
     v[VF] = 0;
 }
 
-void CPU_t::XOR(uint8_t vx_, uint8_t vy_)
+void CPU_t::XOR(const uint8_t &vx_, const uint8_t &vy_)
 {
     v[vx_] ^= v[vy_];
     // AND,OR,XOR reset VF
     v[VF] = 0;
 }
 
-void CPU_t::ADD(uint8_t vx_, uint8_t vy_)
+void CPU_t::ADD(const uint8_t &vx_, const uint8_t &vy_)
 {
     uint16_t res = v[vx_] + v[vy_];
     v[vx_] = res & ARITH_8_BIT_RES;
     v[VF] = (res & (1 << ADD_CARRY_BIT)) >> ADD_CARRY_BIT;
 }
 
-void CPU_t::SUB(uint8_t vx_, uint8_t vy_)
+void CPU_t::SUB(const uint8_t &vx_, const uint8_t &vy_)
 {
     uint16_t res16 = v[vx_] - v[vy_];
     uint8_t res8 = v[vx_] - v[vy_];
@@ -356,14 +317,14 @@ void CPU_t::SUB(uint8_t vx_, uint8_t vy_)
     v[VF] = res8 == res16;
 }
 
-void CPU_t::SHR(uint8_t vx_, uint8_t vy_)
+void CPU_t::SHR(const uint8_t &vx_, const uint8_t &vy_)
 {
 
     v[vx_] = v[vy_] >> 1;
     v[VF] = v[vy_] & 1;
 }
 
-void CPU_t::SUBN(uint8_t vx_, uint8_t vy_)
+void CPU_t::SUBN(const uint8_t &vx_, const uint8_t &vy_)
 {
     uint16_t res16 = v[vy_] - v[vx_];
     uint8_t res8 = v[vy_] - v[vx_];
@@ -371,13 +332,13 @@ void CPU_t::SUBN(uint8_t vx_, uint8_t vy_)
     v[VF] = res8 == res16;
 }
 
-void CPU_t::SHL(uint8_t vx_, uint8_t vy_)
+void CPU_t::SHL(const uint8_t &vx_, const uint8_t &vy_)
 {
     v[vx_] = v[vy_] << 1;
     v[VF] = (v[vy_] & (1 << 7)) >> 7;
 }
 
-void CPU_t::SNE(uint8_t vx_, uint8_t vy_)
+void CPU_t::SNE(const uint8_t &vx_, const uint8_t &vy_)
 {
     if (v[vx_] != v[vy_])
     {
@@ -385,18 +346,17 @@ void CPU_t::SNE(uint8_t vx_, uint8_t vy_)
     }
 }
 
-void CPU_t::JP(uint16_t addr_)
+void CPU_t::JP(const uint16_t &addr_)
 {
     pc = addr_ + v[0];
 }
 
-void CPU_t::RND(uint8_t vx_, uint8_t nn_)
+void CPU_t::RND(const uint8_t &vx_, const uint8_t &nn_)
 {
     v[vx_] = nn_ & (rand() % 256);
 }
 
-// Keyboard
-void CPU_t::SKP(uint8_t vx_)
+void CPU_t::SKP(const uint8_t &vx_)
 {
     if (keyboard->getKey(v[vx_]))
     {
@@ -404,8 +364,7 @@ void CPU_t::SKP(uint8_t vx_)
     }
 }
 
-// Keyboard
-void CPU_t::SKNP(uint8_t vx_)
+void CPU_t::SKNP(const uint8_t &vx_)
 {
     if (!keyboard->getKey(v[vx_]))
     {
@@ -413,26 +372,31 @@ void CPU_t::SKNP(uint8_t vx_)
     }
 }
 
-// Delay Timer
-void CPU_t::LDDT(uint8_t vx_)
+void CPU_t::LDDT(const uint8_t &vx_)
 {
     dt = v[vx_];
 }
 
-void CPU_t::LDST(uint8_t vx_)
+void CPU_t::STDT(const uint8_t &vx_)
+{
+    v[vx_] = dt;
+}
+
+void CPU_t::LDST(const uint8_t &vx_)
 {
     st = v[vx_];
 }
 
-void CPU_t::ADD(uint8_t vx_)
+void CPU_t::ADD(const uint8_t &vx_)
 {
     I += v[vx_];
 }
 
-void CPU_t::LDB(uint8_t vx_)
+void CPU_t::LDB(const uint8_t &vx_)
 {
     uint8_t temp = v[vx_];
 
+    // BCD conversion
     for (uint8_t i = 0; i < 3; i++)
     {
         memory->write(I + 2 - i, temp % 10);
@@ -440,7 +404,7 @@ void CPU_t::LDB(uint8_t vx_)
     }
 }
 
-void CPU_t::STI(uint8_t vx_)
+void CPU_t::STI(const uint8_t &vx_)
 {
     for (uint8_t i = 0; i <= vx_; i++)
     {
@@ -448,7 +412,7 @@ void CPU_t::STI(uint8_t vx_)
     }
 }
 
-void CPU_t::LDI(uint8_t vx_)
+void CPU_t::LDI(const uint8_t &vx_)
 {
     for (uint8_t i = 0; i <= vx_; i++)
     {
@@ -457,14 +421,15 @@ void CPU_t::LDI(uint8_t vx_)
 }
 
 // Load font
-void CPU_t::LDF(uint8_t vx_)
+void CPU_t::LDF(const uint8_t &vx_)
 {
+    I = 5 * v[vx_];
 }
 
 void CPU_t::on()
 {
     memory->loadFont();
-    memory->loadROM("../rom/5-quirks.ch8");
+    memory->loadROM("../rom/Pong (alt).ch8");
     window->start();
     bool run = true;
     SDL_Event e;
@@ -475,6 +440,7 @@ void CPU_t::on()
     sdT1 = high_resolution_clock::now();
     duration<double, milli> cpuDT;
     duration<double, milli> sdDT;
+    SDL_Scancode scancode;
 
     while (run)
     {
@@ -485,14 +451,14 @@ void CPU_t::on()
         sdDT = sdT2 - sdT1;
 
         // Cpu cycle
-        if (cpuDT.count() >= ((1000 * static_cast<double>(1 / FPS))))
+        if (cpuDT.count() >= (1000 * static_cast<double>(1.0 / FPS)))
         {
             cycle();
             cpuT1 = cpuT2;
         }
 
         // Delay and Sound Register are fixed to 60hz
-        if (sdDT.count() >= (1000 * static_cast<double>(1 / DELAY_AND_SOUND_HZ)))
+        if (sdDT.count() >= (1000 * static_cast<double>(1.0 / DELAY_AND_SOUND_HZ)))
         {
             if (dt != 0)
             {
@@ -500,7 +466,12 @@ void CPU_t::on()
             }
             if (st != 0)
             {
+                window->playSound();
                 st--;
+            }
+            else
+            {
+                window->pauseSound();
             }
 
             sdT1 = sdT2;
@@ -513,10 +484,18 @@ void CPU_t::on()
         switch (e.type)
         {
         case SDL_KEYDOWN:
-            keyboard->keyDown(keyboard->scanCodeToKey(e.key.keysym.scancode));
+            scancode = e.key.keysym.scancode;
+            if (keyboard->validKey(scancode))
+            {
+                keyboard->keyDown(keyboard->scanCodeToKey(scancode));
+            }
             break;
         case SDL_KEYUP:
-            keyboard->keyUp(keyboard->scanCodeToKey(e.key.keysym.scancode));
+            scancode = e.key.keysym.scancode;
+            if (keyboard->validKey(scancode))
+            {
+                keyboard->keyUp(keyboard->scanCodeToKey(scancode));
+            }
             break;
         }
     }
